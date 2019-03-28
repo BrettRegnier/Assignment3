@@ -1,17 +1,14 @@
-window.onload = init;
-
-function init() {
+window.onload = function() {
 
     var query;
     var input = document.getElementById("query");
 
     var prevListTweets = [];
     var curListTweets = [];
-    var listTweets = [];
 
-
-
-
+	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext("2d");
+	
     function Sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -26,13 +23,14 @@ function init() {
     function GetTweets() {
 
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'get_tweets.php', true); //this changes the state of xmlhttp
+        xhr.open('GET', 'php/get_tweets.php', true); //this changes the state of xmlhttp
         xhr.send(null);
         xhr.onload = function () {
             // document.getElementById("results").innerHTML = xhr.responseText;
             if (xhr.status == 200) {
 
                 var tmp = [];
+                var newTweets = [];
                 var tweets = JSON.parse(xhr.responseText);
                 tweets = tweets.statuses;
                 tweets.forEach(function (tweet) {
@@ -42,7 +40,7 @@ function init() {
                     }
                 });
 
-                tweets = tmp;
+				tweets = tmp;
 
                 if (curListTweets.length != 0) {
                     tweets.forEach(function (tweet) {
@@ -58,14 +56,14 @@ function init() {
                             curListTweets.shift(tweet);
                             curListTweets.pop();
                         }
-                    });
+					});
                 }
                 else {
                     curListTweets = tweets;
                 }
 
                 prevListTweets = curListTweets;
-
+ 
 
                 //  EXAMPLE OUTPUT TO A LIST
                 var tweetList = "<ul>";
