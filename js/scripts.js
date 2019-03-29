@@ -1,13 +1,12 @@
 window.onload = function() {
-
-    var query;
-    var input = document.getElementById("query");
-
     var prevListTweets = [];
     var curListTweets = [];
 
 	var canvas = document.getElementById("canvas");
 	var ctx = canvas.getContext("2d");
+	
+	var circuit = new Circuit(300, 300, canvas);
+	circuit.Draw();
 	
     function Sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
