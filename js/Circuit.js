@@ -26,6 +26,7 @@ class Circuit {
 			ctx.strokeStyle = "black";
 			ctx.stroke();
 			
+			ctx.fillStyle = "black";
 			var thicc = 5;
 			if (mapy < top)
 			{
@@ -34,7 +35,6 @@ class Circuit {
 				var vertx = (Math.floor(Math.random() * this.cpuW / 2) + left);
 				var verty = mapy;
 				var vertdis = top - mapy;
-				ctx.fillStyle = "black";
 				ctx.fillRect(vertx, verty, thicc, vertdis);
 
 				var horix;
@@ -53,7 +53,6 @@ class Circuit {
 				var vertx = (Math.floor(Math.random() * this.cpuW / 2) + left);
 				var verty = bottom;
 				var vertdis =  Math.round(mapy - bottom) + 5;
-				ctx.fillStyle = "black";
 				ctx.fillRect(vertx, verty, thicc, vertdis);
 
 				var horix;
@@ -67,7 +66,23 @@ class Circuit {
 			}
 			else if (mapx < left)
 			{
+				// TODO fix this
 				// left case
+				// draw the rect that connects directly with the cpu
+				var horiy = (Math.floor(Math.random() * this.cpuH / 2) + top);
+				var horix = mapx;
+				var horidis = Math.abs(mapx - left);
+				ctx.fillRect(horix, horiy, horidis, thicc);
+				
+				var verty;
+				if (verty < horiy)
+					verty = mapy;
+				else
+					verty = horiy;
+				var vertx = left;
+				var vertdis = Math.abs(verty - mapy);
+				ctx.fillRect(vertx, verty, thicc, vertdis);
+								
 			}
 			else if (mapx > right)
 			{
