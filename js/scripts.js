@@ -5,7 +5,7 @@ window.onload = function() {
 	var canvas = document.getElementById("canvas");
 	var ctx = canvas.getContext("2d");
 	
-	var circuit = new Circuit(300, 300, canvas);
+	var circuit = new Circuit(1800, 900, canvas);
 	circuit.Draw();
 	
     function Sleep(ms) {
