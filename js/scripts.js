@@ -2,11 +2,19 @@ window.onload = function() {
     var prevListTweets = [];
     var curListTweets = [];
 
-	var canvas = document.getElementById("canvas");
-	var ctx = canvas.getContext("2d");
-	
+	var canvas = document.getElementById("canvas");	
 	var circuit = new Circuit(1800, 900, canvas);
-	circuit.Draw();
+    circuit.Draw();
+    
+    
+    canvas.addEventListener("click", function(e) {
+        var pos = {
+            x: e.clientX,
+            y: e.clientY
+        };
+        
+        circuit.Click(pos);
+    });
 	
     function Sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
