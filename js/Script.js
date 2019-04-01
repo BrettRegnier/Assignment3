@@ -1,19 +1,49 @@
 window.onload = function() {
-    var prevListTweets = [];
-    var curListTweets = [];
+    var _prevListTweets = [];
+    var _curListTweets = [];
+    
+    var _tweets = [];
+    var _container = document.getElementById("container");
 
-	var canvas = document.getElementById("canvas");	
-	var circuit = new Circuit(1800, 900, canvas);
-    circuit.Draw();
+    var _canvas = document.getElementById("canvas");	
+    _canvas.width = window.innerWidth;
+    _canvas.height = window.innerHeight;
     
+    var _circuit = new Circuit(1800, 900, _canvas);
+    _circuit.Draw();
+
+    // HTML
+    var tweet = document.createElement("div");
+    tweet.classList = "tweet";
+    tweet.id = "tweet";
     
-    canvas.addEventListener("click", function(e) {
+    var tweet_user = document.createElement("span");
+    tweet_user.classList = "tweet__user";
+    tweet.appendChild(tweet_user);
+    
+    var tweet_name = document.createElement("span");
+    tweet_name.classList = "tweet__name";
+    tweet_user.appendChild(tweet_name);
+    
+    var tweet_handle = document.createElement("span");
+    tweet_handle.classList = "tweet__handle";
+    tweet_user.appendChild(tweet_handle);
+    
+    var tweet_message = document.createElement("span");
+    tweet_message.classList = "tweet__message";
+    tweet.appendChild(tweet_message);
+    
+    _canvas.addEventListener("click", function(e) {
         var pos = {
             x: e.clientX,
             y: e.clientY
         };
         
-        circuit.Click(pos);
+        var id = _circuit.Click(pos);
+        if (id != -1)
+        {
+            // create the html here?
+        }
     });
 	
     function Sleep(ms) {
@@ -31,7 +61,7 @@ window.onload = function() {
 
         var xhr = new XMLHttpRequest();
         xhr.open('GET', 'php/get_tweets.php', true); //this changes the state of xmlhttp
-        xhr.send(null);
+        // xhr.send(null);
         xhr.onload = function () {
             // document.getElementById("results").innerHTML = xhr.responseText;
             if (xhr.status == 200) {
@@ -49,32 +79,32 @@ window.onload = function() {
 
 				tweets = tmp;
 
-                if (curListTweets.length != 0) {
+                if (_curListTweets.length != 0) {
                     tweets.forEach(function (tweet) {
                         var newTweet = true;
 
-                        prevListTweets.forEach(function (oldTweet) {
+                        _prevListTweets.forEach(function (oldTweet) {
                             if (tweet.id == oldTweet.id) {
                                 newTweet = false;
                             }
                         });
 
                         if (newTweet) {
-                            curListTweets.shift(tweet);
-                            curListTweets.pop();
+                            _curListTweets.shift(tweet);
+                            _curListTweets.pop();
                         }
 					});
                 }
                 else {
-                    curListTweets = tweets;
+                    _curListTweets = tweets;
                 }
 
-                prevListTweets = curListTweets;
+                _prevListTweets = _curListTweets;
  
 
                 //  EXAMPLE OUTPUT TO A LIST
                 var tweetList = "<ul>";
-                prevListTweets.forEach(function (tweet) {
+                _prevListTweets.forEach(function (tweet) {
                     tweetList += "<li>" + tweet.text + "</li>";
                 });
                 tweetList += "</ul>"

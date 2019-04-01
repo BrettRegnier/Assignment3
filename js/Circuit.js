@@ -5,6 +5,7 @@ class Circuit {
 		this.leds = [];
 		this.BuildLeds();
 	}
+	// TODO https://codepen.io/Nvagelis/pen/yaQGAL
 
 	Draw() {
 		var ctx = this.canvas.getContext("2d");
@@ -12,35 +13,38 @@ class Circuit {
 		var right = this.cx + this.cpuW / 2;
 		var top = this.cy - this.cpuH / 2;
 		var bottom = this.cy + this.cpuH / 2;
-		
-		var rctx = this.cx - this.cpuW/2;
-		var rcty = this.cy - this.cpuH/2;
 
-		ctx.fillStyle = "black";
+		var rctx = this.cx - this.cpuW / 2;
+		var rcty = this.cy - this.cpuH / 2;
+
+		ctx.fillStyle = "#101010";
 		ctx.fillRect(rctx, rcty, this.cpuW, this.cpuH);
-		ctx.fill();
-		
-		var innerstyle = 10;
-		ctx.fillStyle = "red";
-		ctx.fillRect(rctx + innerstyle, rcty + innerstyle, this.cpuW - innerstyle*2, this.cpuH - innerstyle*2);
-		ctx.fill();
+
+		ctx.fillStyle = "#D7B740";
+		ctx.fillRect(rctx + 2, rcty + 2, this.cpuW - 4, this.cpuH - 4);
+
+		ctx.fillStyle = "#EBE3E0";
+		ctx.fillRect(rctx + 4, rcty + 4, this.cpuW - 8, this.cpuH - 8);
+
+		var innerstyle = 12;
+		ctx.fillStyle = "#7E7C7D";
+		ctx.fillRect(rctx + innerstyle - 1, rcty + innerstyle - 1, this.cpuW - (innerstyle * 2) + 2, this.cpuH - (innerstyle * 2) + 2);
+
+		ctx.fillStyle = "#EFEAE6";
+		ctx.fillRect(rctx + innerstyle, rcty + innerstyle, this.cpuW - innerstyle * 2, this.cpuH - innerstyle * 2);
 
 		var r = 15;
 		for (var i = 0; i < this.leds.length; i++) {
-			ctx.beginPath();
-			ctx.arc(this.leds[i].x, this.leds[i].y, this.leds[i].radius, 0, 2 * Math.PI);
-			ctx.strokeStyle = "black";
-			ctx.stroke();
-			ctx.closePath();
 
-			ctx.fillStyle = "black";
+			ctx.fillStyle = "#D7B740";
+			// ctx.strokeStyle = "#EBE3E0";
 			var thicc = 5;
 			if (this.leds[i].y < top) {
 				// above case
 				// draw the rect that connects directly to the cpu
 				var vertx = (Math.floor(Math.random() * this.cpuW / 2) + left);
-				var verty = this.leds[i].y;
-				var vertdis = top - this.leds[i].y;
+				var verty = this.leds[i].y - 2;
+				var vertdis = top - verty;
 				ctx.fillRect(vertx, verty, thicc, vertdis);
 
 				var horix;
@@ -50,7 +54,7 @@ class Circuit {
 					horix = vertx;
 				var horiy = this.leds[i].y;
 				var horidis = Math.abs(this.leds[i].x - vertx);
-				ctx.fillRect(horix, horiy, horidis, thicc);
+				ctx.fillRect(horix, horiy - 2, horidis, thicc);
 			}
 			else if (this.leds[i].y > bottom) {
 				// below case
@@ -92,9 +96,14 @@ class Circuit {
 				// right case
 			}
 
+			ctx.beginPath();
+			ctx.arc(this.leds[i].x, this.leds[i].y, this.leds[i].radius, 0, 2 * Math.PI);
+			ctx.strokeStyle = "black";
+			ctx.stroke();
+			ctx.closePath();
 
 			ctx.beginPath();
-			ctx.arc(this.leds[i].x, this.leds[i].y, r - 2, 0, 2 * Math.PI);
+			ctx.arc(this.leds[i].x, this.leds[i].y, this.leds[i].radius - 1, 0, 2 * Math.PI);
 			ctx.fillStyle = "white";
 			ctx.fill();
 			ctx.closePath();
@@ -106,11 +115,11 @@ class Circuit {
 	}
 
 	Click(mouse) {
-		this.leds.forEach(led => {
-			if (this.Intersection(mouse, led)) {
-				alert("click worked");
-			}
-		});
+		for (var i = 0; i < this.leds.length; i++)
+			if (this.Intersection(mouse, this.leds[i]))
+				return i;
+
+		return -1;
 	}
 
 	Intersection(point, circle) {
@@ -125,7 +134,7 @@ class Circuit {
 		this.cx = cW / 2;
 		this.cy = cH / 2;
 
-		this.cpuW = Math.abs(0.2 * this.cW);
+		this.cpuW = Math.abs(0.2 * this.cH);
 		this.cpuH = Math.abs(0.2 * this.cH);
 	}
 
@@ -143,7 +152,7 @@ class Circuit {
 		var r = 16;
 
 		// For 12 different leds randomly generate points and make sure they aren't inside of the CPU sides + 1
-		for (var i = 0; i < 1; i++) {
+		for (var i = 0; i < 6; i++) {
 			var nextX = (Math.random() * rrX * 2) - rrX;
 			while (prevX == nextX || (nextX < 0.5 && -0.5 < nextX)) {
 				nextX = (Math.random() * rrX * 2) - rrX;

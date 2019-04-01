@@ -1,13 +1,53 @@
-figure {
-	width: 20%;
-	float: left;
+* {
+	box-sizing: border-box;
 }
 
-figure img {
-	width: 100%;
+html {
+	height: 100vh;
 }
 
-figcaption {
-	text-align: right;
+body {
+	min-height: 100%;
+	margin: 0;
 }
 
+.container {
+	background-color: #353535;
+}
+
+.canvas {
+	position: relative;
+}
+
+.tweet {
+	position: absolute;	
+	top: 0;
+
+	padding: 10px 5px;
+	/* display: none; */
+}
+
+.tweet--active {
+	display: block;
+}
+
+.tweet span {
+	display: block;
+}
+
+.tweet__user {
+	margin-bottom: 10px;
+}
+
+.tweet__name {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.tweet__handle {
+	font-size: 14px;
+}
+
+.tweet__message {
+	padding: 0px 10px;
+}
