@@ -20,6 +20,10 @@ body {
 	position: relative;
 }
 
+.lightning {
+	position: absolute;
+}
+
 .tweet {
 	background-color: #EFEAE6;
 	border-radius: 4px;

@@ -16,36 +16,6 @@ window.onload = function () {
 	var _curTweet;
 	var _prevTweet;
 
-	// HTML
-	// todo add links
-	// var tweet = document.createElement("div");
-	// tweet.classList = "tweet";
-	// tweet.id = "tweet";
-
-	// var tweet_close = document.createElement("div");
-	// tweet_close.classList = "tweet__close";
-	// tweet.appendChild(tweet_close);
-
-	// var tweet_link = document.createElement("a");
-	// tweet_link.classList = "tweet__link shine";
-	// tweet.appendChild(tweet_link);
-
-	// var tweet_user = document.createElement("span");
-	// tweet_user.classList = "tweet__user";
-	// tweet_link.appendChild(tweet_user);
-
-	// var tweet_name = document.createElement("span");
-	// tweet_name.classList = "tweet__name";
-	// tweet_user.appendChild(tweet_name);
-
-	// var tweet_handle = document.createElement("span");
-	// tweet_handle.classList = "tweet__handle";
-	// tweet_user.appendChild(tweet_handle);
-
-	// var tweet_message = document.createElement("span");
-	// tweet_message.classList = "tweet__message";
-	// tweet_link.appendChild(tweet_message);
-
 	_canvas.addEventListener("click", function (e) {
 		var pos = {
 			x: e.clientX,
@@ -66,6 +36,8 @@ window.onload = function () {
 					holder.box.style.top = led.y + "px";
 
 					_curTweet = holder;
+					_circuit.Off(led.id);
+					_circuit.Draw();
 				}
 			});
 		}
@@ -89,8 +61,6 @@ window.onload = function () {
 
 			for (var i = 0; i < _numTweets; i++)
 			{
-				// HTML
-				// todo add links
 				var tweet = document.createElement("div");
 				tweet.classList = "tweet";
 				tweet.id = "tweet" + i;
@@ -99,7 +69,9 @@ window.onload = function () {
 				tweet_close.classList = "tweet__close";
 				tweet_close.innerText = "x";
 				tweet_close.addEventListener("click", function () {
-					this.parentElement.classList.toggle("tweet--active");
+					if (this.parentElement == _curTweet.box)
+						_curTweet = null;
+						this.parentElement.classList.toggle("tweet--active");
 				});
 				tweet.appendChild(tweet_close);
 
@@ -124,7 +96,10 @@ window.onload = function () {
 				tweet_message.classList = "tweet__message";
 				tweet_link.appendChild(tweet_message);
 
-				_tweetHolder.push({ ledID: -1, box: tweet, link: tweet_link, username: tweet_name, handle: tweet_handle, msg: tweet_message });
+
+				var holder = { ledID: -1, box: tweet, link: tweet_link, username: tweet_name, handle: tweet_handle, msg: tweet_message };
+
+				_tweetHolder.push(holder);
 				_container.appendChild(tweet);
 			}
 		}
@@ -132,9 +107,8 @@ window.onload = function () {
 		var xhr = new XMLHttpRequest();
 		//this changes the state of xmlhttp
 		xhr.open('GET', 'php/get_tweets.php?c=' + _numTweets, true);
-		xhr.send(null);
+		// xhr.send(null);
 		xhr.onload = function () {
-			// document.getElementById("results").innerHTML = xhr.responseText;
 			if (xhr.status == 200)
 			{
 
@@ -177,11 +151,11 @@ window.onload = function () {
 					_curListTweets = tweets;
 					for (var i = 0; i < tweets.length; i++)
 					{
-						var url;
-						if (_curListTweets[i].entities.urls.length > 0)
+						var url = "";
+						if (_curListTweets[i].entities.urls && _curListTweets[i].entities.urls.length > 0)
 							url = _curListTweets[i].entities.urls[0].expanded_url;
-						else
-							url = _curListTweets[i].extended_entities.media[0].expanded_url
+						else if (_curListTweets[i].extended_entities)
+							url = _curListTweets[i].extended_entities.media[0].expanded_url;
 
 						_tweetHolder[i].link.setAttribute("href", url);
 						_tweetHolder[i].username.innerText = _curListTweets[i].user.name;
@@ -197,11 +171,11 @@ window.onload = function () {
 					var idx = _curListTweets.length - 1;
 					for (var i = 0; i <= newTweets; i++)
 					{
-						var url;
-						if (_curListTweets[i].entities.urls.length > 0)
+						var url = "";
+						if (_curListTweets[i].entities.urls && _curListTweets[i].entities.urls.length > 0)
 							url = _curListTweets[i].entities.urls[0].expanded_url;
-						else
-							url = _curListTweets[i].extended_entities.media[0].expanded_url
+						else if (_curListTweets[i].extended_entities)
+							url = _curListTweets[i].extended_entities.media[0].expanded_url;
 
 						if (_curListTweets.length >= _numTweets)
 						{
@@ -222,10 +196,9 @@ window.onload = function () {
 							_circuit.On(_tweetHolder[i].ledID);
 						}
 					}
-					
-					Circuit.Draw();
 				}
 
+				_circuit.Draw();
 				_prevListTweets = _curListTweets;
 
 
