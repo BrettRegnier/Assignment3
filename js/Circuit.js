@@ -103,26 +103,33 @@ class Circuit {
 		{
 			ctx.beginPath();
 			ctx.arc(this.leds[i].x, this.leds[i].y, this.leds[i].radius, 0, 2 * Math.PI);
-			ctx.strokeStyle = "black";
+			ctx.strokeStyle = "#000000";
 			ctx.stroke();
 			ctx.closePath();
 
 			ctx.beginPath();
 			ctx.arc(this.leds[i].x, this.leds[i].y, this.leds[i].radius - 1, 0, 2 * Math.PI);
-			ctx.fillStyle = "white";
+			ctx.fillStyle = this.leds[i].color;
 			ctx.fill();
 			ctx.closePath();
 		}
 	}
-
-	Update() {
-
+	
+	On(idx) {
+		this.leds[idx].color = "#D7B740";
+	}
+	
+	Off(idx) {
+		this.color = "#ffffff";
 	}
 
 	Click(mouse) {
 		for (var i = 0; i < this.leds.length; i++)
 			if (this.Intersection(mouse, this.leds[i]))
+			{
+				// this.leds[i].
 				return { id: i, x: this.leds[i].x, y: this.leds[i].y };
+			}
 
 		return -1;
 	}
@@ -222,7 +229,7 @@ class Circuit {
 			var mapx = Math.max(Math.min((this.cW * nextX) / rrX, this.cW - 200), 200);
 			var mapy = Math.max(Math.min((this.cH * nextY) / rrY, this.cH - 100), 100);
 
-			this.leds.push({ x: mapx, y: mapy, radius: r });
+			this.leds.push({ x: mapx, y: mapy, radius: r, color: "#ffffff"});
 		}
 	}
 }
