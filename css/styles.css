@@ -9,6 +9,7 @@ html {
 body {
 	min-height: 100%;
 	margin: 0;
+	overflow: hidden;
 }
 
 .container {
@@ -20,19 +21,44 @@ body {
 }
 
 .tweet {
+	background-color: #EFEAE6;
+	border-radius: 4px;
+	overflow: hidden;
 	position: absolute;	
 	top: 0;
-
-	padding: 10px 5px;
-	/* display: none; */
+	min-width: 250px;
+	max-width: 400px;
+	display: none;
+	text-decoration: none;
 }
 
 .tweet--active {
 	display: block;
 }
 
+.tweet__link {
+	padding: 10px 5px;
+	display: block;
+	color: #303030;
+	text-decoration: none;
+	min-height: 100px;
+}
+
 .tweet span {
 	display: block;
+}
+
+.tweet__close {
+    position: absolute;
+    right: 5px;
+    top: 2px;
+    border-radius: 40px;
+    border: 1px solid #303030;
+    padding: 5px 10px;
+    font-family: roboto;
+    font-size: 12px;
+    z-index: 2;
+    cursor: pointer;
 }
 
 .tweet__user {
@@ -46,6 +72,7 @@ body {
 
 .tweet__handle {
 	font-size: 14px;
+    padding-left: 10px;
 }
 
 .tweet__message {

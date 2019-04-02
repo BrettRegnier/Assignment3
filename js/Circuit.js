@@ -6,6 +6,9 @@ class Circuit {
 		this.BuildLeds();
 	}
 	// TODO https://codepen.io/Nvagelis/pen/yaQGAL
+	// TODO make leds glow/turn green when a tweet comes in.
+	// todo make leds red when tweet has been viewed.
+	// todo change hashtags to tech related stuff.
 
 	Draw() {
 		var ctx = this.canvas.getContext("2d");
@@ -37,7 +40,6 @@ class Circuit {
 		for (var i = 0; i < this.leds.length; i++) {
 
 			ctx.fillStyle = "#D7B740";
-			// ctx.strokeStyle = "#EBE3E0";
 			var thicc = 5;
 			if (this.leds[i].y < top) {
 				// above case
@@ -95,7 +97,10 @@ class Circuit {
 			else if (this.leds[i].x > right) {
 				// right case
 			}
-
+		}
+		
+		for (var i = 0; i < this.leds.length; i++)
+		{
 			ctx.beginPath();
 			ctx.arc(this.leds[i].x, this.leds[i].y, this.leds[i].radius, 0, 2 * Math.PI);
 			ctx.strokeStyle = "black";
@@ -117,7 +122,7 @@ class Circuit {
 	Click(mouse) {
 		for (var i = 0; i < this.leds.length; i++)
 			if (this.Intersection(mouse, this.leds[i]))
-				return i;
+				return { id: i, x: this.leds[i].x, y: this.leds[i].y };
 
 		return -1;
 	}
@@ -147,28 +152,76 @@ class Circuit {
 		var nextY = 0;
 
 		// random range x
-		var rrX = 1;
-		var rrY = 1;
+		var rrX = 2;
+		var rrY = 2;
 		var r = 16;
+		
+		var upBound = 1.2;
+		var lowBound = 0.8;
 
-		// For 12 different leds randomly generate points and make sure they aren't inside of the CPU sides + 1
-		for (var i = 0; i < 6; i++) {
-			var nextX = (Math.random() * rrX * 2) - rrX;
-			while (prevX == nextX || (nextX < 0.5 && -0.5 < nextX)) {
-				nextX = (Math.random() * rrX * 2) - rrX;
-			}
+		// TODO calculations for making any inputted amount be divided into 4 sections
 
-			nextY = (Math.random() * rrY * 2) - rrY;
-			while (prevY == nextY || (nextY < 0.3 && nextY > -0.3)) {
-				nextY = (Math.random() * rrY * 2) - rrY;
-			}
+		// Find right sided plotted points
+		for (var i = 0; i < 3; i++) {
+			nextX = Math.random() * rrX;
+			while (prevX == nextX || nextX < upBound)
+				nextX = Math.random() * rrX;
+			nextY = Math.random() * rrY;
 
 			prevX = nextX;
 			prevY = nextY;
 
-			// TODO map coords into the canvas			
-			var mapx = Math.round(Math.max(Math.min(Math.abs(Math.abs(nextX * this.cW * 2) - this.cW), this.cW - r), r));
-			var mapy = Math.round(Math.max(Math.min(Math.abs(Math.abs(nextY * this.cH * 2) - this.cH), this.cH - r), r));
+			var mapx = Math.max(Math.min((this.cW * nextX) / rrX, this.cW - 200), 200);
+			var mapy = Math.max(Math.min((this.cH * nextY) / rrY, this.cH - 100), 100);
+
+			this.leds.push({ x: mapx, y: mapy, radius: r });
+		}
+
+		// find left sided plotted points
+		for (var i = 0; i < 3; i++) {
+			nextX = Math.random() * rrX;
+			while (prevX == nextX || nextX > lowBound)
+				nextX = Math.random() * rrX;
+			nextY = Math.random() * rrY;
+
+			prevX = nextX;
+			prevY = nextY;
+
+			var mapx = Math.max(Math.min((this.cW * nextX) / rrX, this.cW - 200), 200);
+			var mapy = Math.max(Math.min((this.cH * nextY) / rrY, this.cH - 100), 100);
+
+			this.leds.push({ x: mapx, y: mapy, radius: r });
+		}
+
+		// find top sided plotted points
+		for (var i = 0; i < 3; i++) {
+			nextX = Math.random() * rrX;			
+			nextY = Math.random() * rrY;
+			while (prevY == nextY || nextY > lowBound)
+				nextY = Math.random() * rrY;
+
+			prevX = nextX;
+			prevY = nextY;
+
+			var mapx = Math.max(Math.min((this.cW * nextX) / rrX, this.cW - 200), 200);
+			var mapy = Math.max(Math.min((this.cH * nextY) / rrY, this.cH - 100), 100);
+
+			this.leds.push({ x: mapx, y: mapy, radius: r });
+		}
+
+		// find left sided plotted points
+		for (var i = 0; i < 3; i++) {
+			nextX = Math.random() * rrX;
+			nextY = Math.random() * rrY;
+			while (prevY == nextY || nextY < upBound)
+				nextY = Math.random() * rrY;
+
+			prevX = nextX;
+			prevY = nextY;
+
+			var mapx = Math.max(Math.min((this.cW * nextX) / rrX, this.cW - 200), 200);
+			var mapy = Math.max(Math.min((this.cH * nextY) / rrY, this.cH - 100), 100);
+
 			this.leds.push({ x: mapx, y: mapy, radius: r });
 		}
 	}

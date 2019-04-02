@@ -9,11 +9,13 @@
 	    'consumer_key' => "ZOI07gBnR5kFsOhhlz3zT61DW",
 	    'consumer_secret' => "hCX4uSTT3fGTuhhiPRr7cqxIYWbeEWZ7OiH9lIOkUGccvYNs51"
 	);
+	
+	$count = $_REQUEST["c"];
 
 	// Choose URL and Request Method
 	$url = "https://api.twitter.com/1.1/search/tweets.json";
 	// $getfield = '?q=#tech+OR+technology+futurology:safe&lang=en'; // queries start with ? and are strung together with &
-	$getfield = '?q=#puppies+filter:safe&lang=en&count=12'; // queries start with ? and are strung together with &
+	$getfield = '?q=#puppies+filter:safe&lang=en&count=' . $count; // queries start with ? and are strung together with &
 	$requestMethod = "GET";
 	
 	//Perform the request!
