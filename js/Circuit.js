@@ -23,7 +23,7 @@ class Circuit {
 		ctx.fillStyle = "#D7B740";
 		ctx.fillRect(rctx + 2, rcty + 2, this.cpuW - 4, this.cpuH - 4);
 
-		ctx.fillStyle = "#EBE3E0";
+		ctx.fillStyle = "#C0C0C0";
 		ctx.fillRect(rctx + 4, rcty + 4, this.cpuW - 8, this.cpuH - 8);
 
 		var innerstyle = 12;

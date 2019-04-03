@@ -35,8 +35,8 @@ window.onload = function () {
 					if (_prevTweet) _prevTweet.box.classList.toggle("tweet--active");
 
 					holder.box.classList.toggle("tweet--active");
-					holder.box.style.left = led.x + "px";
-					holder.box.style.top = led.y + "px";
+					holder.box.style.left = (led.x - holder.box.clientWidth/2) + "px";
+					holder.box.style.top = (led.y - holder.box.clientHeight/2) + "px";
 
 					_curTweet = holder;
 					_circuit.Off(led.id);
