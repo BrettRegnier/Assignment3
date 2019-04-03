@@ -1,9 +1,15 @@
 window.onload = function () {
+
+	// Potentially problem: list of 100 tweets come in, only keep 12, eventaully cycle back to the first ones.
+	// Potential fix, have array that keeps track of all previous tweets up to a max, then flush.
+	
+	var _numTweets = 12;
+	var _retweetThreshold = 10;
+
 	var _prevListTweets = [];
 	var _curListTweets = [];
 
 	var _tweetHolder = [];
-	var _numTweets = 12;
 	var _container = document.getElementById("container");
 
 	var _canvas = document.getElementById("canvas");
@@ -71,7 +77,7 @@ window.onload = function () {
 				tweet_close.addEventListener("click", function () {
 					if (this.parentElement == _curTweet.box)
 						_curTweet = null;
-						this.parentElement.classList.toggle("tweet--active");
+					this.parentElement.classList.toggle("tweet--active");
 				});
 				tweet.appendChild(tweet_close);
 
@@ -103,15 +109,14 @@ window.onload = function () {
 				_container.appendChild(tweet);
 			}
 		}
-
+		
 		var xhr = new XMLHttpRequest();
 		//this changes the state of xmlhttp
-		xhr.open('GET', 'php/get_tweets.php?c=' + _numTweets, true);
-		// xhr.send(null);
+		xhr.open('GET', 'php/get_tweets.php?c=' + 50, true);
+		xhr.send(null);
 		xhr.onload = function () {
 			if (xhr.status == 200)
 			{
-
 				var tmp = [];
 				var newTweets = 0;
 				var tweets = JSON.parse(xhr.responseText);
@@ -125,51 +130,31 @@ window.onload = function () {
 
 				tweets = tmp;
 
-				if (_curListTweets.length != 0)
+				for (var i = tweets.length - 1; i > 0; i--)
 				{
-					tweets.forEach(function (tweet) {
+					// while less than requested tweets
+					if (newTweets < _numTweets)
+					{
 						var newTweet = true;
-
-						_prevListTweets.forEach(function (oldTweet) {
-							if (tweet.id == oldTweet.id)
-							{
-								newTweet = false;
-							}
-						});
+						if (_prevListTweets)
+							for (var j = 0; j < _prevListTweets.length; j++)
+								if (tweets[i].id == _prevListTweets[j].id)
+									newTweet = false;
 
 						if (newTweet)
 						{
 							newTweets++;
-							_curListTweets.shift(tweet);
-							if (_curListTweets.length >= _numTweets)
+							_curListTweets.unshift(tweets[i]);
+							if (_curListTweets.length > _numTweets)
 								_curListTweets.pop();
 						}
-					});
-				}
-				else
-				{
-					_curListTweets = tweets;
-					for (var i = 0; i < tweets.length; i++)
-					{
-						var url = "";
-						if (_curListTweets[i].entities.urls && _curListTweets[i].entities.urls.length > 0)
-							url = _curListTweets[i].entities.urls[0].expanded_url;
-						else if (_curListTweets[i].extended_entities)
-							url = _curListTweets[i].extended_entities.media[0].expanded_url;
-
-						_tweetHolder[i].link.setAttribute("href", url);
-						_tweetHolder[i].username.innerText = _curListTweets[i].user.name;
-						_tweetHolder[i].handle.innerText = "@" + _curListTweets[i].user.screen_name;
-						_tweetHolder[i].msg.innerText = _curListTweets[i].text;
-						_tweetHolder[i].ledID = i;
-						_circuit.On(_tweetHolder[i].ledID);
 					}
 				}
 
 				if (newTweets > 0)
 				{
 					var idx = _curListTweets.length - 1;
-					for (var i = 0; i <= newTweets; i++)
+					for (var i = 0; i < newTweets; i++)
 					{
 						var url = "";
 						if (_curListTweets[i].entities.urls && _curListTweets[i].entities.urls.length > 0)
@@ -177,32 +162,47 @@ window.onload = function () {
 						else if (_curListTweets[i].extended_entities)
 							url = _curListTweets[i].extended_entities.media[0].expanded_url;
 
-						if (_curListTweets.length >= _numTweets)
-						{
-							_tweetHolder[idx - i].link.setAttribute("href", url);
-							_tweetHolder[idx - i].username.innerText = _curListTweets[i].user.name;
-							_tweetHolder[idx - i].handle.innerText = "@" + _curListTweets[i].user.screen_name;
-							_tweetHolder[idx - i].msg.innerText = _curListTweets[i].text;
-							_tweetHolder[idx - i].ledID = i;
-							_circuit.On(_tweetHolder[i].ledID);
-						}
-						else
+						if (_curListTweets.length < _numTweets)
 						{
 							_tweetHolder[idx + 1 + i].link.setAttribute("href", url);
 							_tweetHolder[idx + 1 + i].username.innerText = _curListTweets[i].user.name;
 							_tweetHolder[idx + 1 + i].handle.innerText = "@" + _curListTweets[i].user.screen_name;
 							_tweetHolder[idx + 1 + i].msg.innerText = _curListTweets[i].text;
 							_tweetHolder[idx + 1 + i].ledID = idx + i;
-							_circuit.On(_tweetHolder[i].ledID);
+							_tweetHolder[idx + 1 + i].tweet = _curListTweets[i];
+							_circuit.On(_tweetHolder[idx + 1 + i].ledID);
+						}
+						else
+						{
+							_tweetHolder[idx - i].link.setAttribute("href", url);
+							_tweetHolder[idx - i].username.innerText = _curListTweets[i].user.name;
+							_tweetHolder[idx - i].handle.innerText = "@" + _curListTweets[i].user.screen_name;
+							_tweetHolder[idx - i].msg.innerText = _curListTweets[i].text;
+							_tweetHolder[idx - i].ledID = i;
+							_tweetHolder[idx - i].tweet = _curListTweets[i];
+							_circuit.On(_tweetHolder[idx - i].ledID);
 						}
 					}
 				}
 
+
+				var lightningLeds = [];
+				for (var i = 0; i < _tweetHolder.length; i++)
+				{
+					if (_tweetHolder[i].ledID >= 0)
+					{
+						var retweetThresh = Math.floor(_tweetHolder[i].tweet.retweet_count / 20);
+						if (retweetThresh > 0)
+							lightningLeds.push({ led: _circuit.leds[_tweetHolder[i].ledID], tendrils: retweetThresh } );
+					}
+				}
+				
+				// LightningLeds(_circuit.leds);
+				LightningLeds(lightningLeds);
+				
 				_circuit.Draw();
 				_prevListTweets = _curListTweets;
-
-
-
+				console.log(_curListTweets);
 			} else
 			{
 				console.log(xhr);

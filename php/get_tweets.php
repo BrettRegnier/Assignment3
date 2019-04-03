@@ -14,8 +14,7 @@
 
 	// Choose URL and Request Method
 	$url = "https://api.twitter.com/1.1/search/tweets.json";
-	// $getfield = '?q=#tech+OR+technology+futurology:safe&lang=en'; // queries start with ? and are strung together with &
-	$getfield = '?q=#puppies+filter:safe&lang=en&count=' . $count; // queries start with ? and are strung together with &
+	$getfield = '?q=#technology+filter:safe&lang=en&count=' . $count . '&result_type=popular'; // queries start with ? and are strung together with &
 	$requestMethod = "GET";
 	
 	//Perform the request!

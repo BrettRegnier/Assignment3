@@ -35,16 +35,16 @@ function createLightning() {
 	for (var l = 0; l < leds.length; l++)
 	{
 		var storm = [];
-		for (var i = 0; i < 1; i++)
+		for (var i = 0; i < leds[l].tendrils; i++)
 		{
-			var x = random(leds[l].x - leds[l].radius*2, leds[l].x + leds[l].radius*2);
-			var y = random(leds[l].y - leds[l].radius*2, leds[l].y + leds[l].radius*2);
+			var x = random(leds[l].led.x - leds[l].led.radius*2, leds[l].led.x + leds[l].led.radius*2);
+			var y = random(leds[l].led.y - leds[l].led.radius*2, leds[l].led.y + leds[l].led.radius*2);
 
 			var xrange = random(3, 7);
 			var yrange = random(2, 4);
-			if (x > leds[l].x)
+			if (x > leds[l].led.x)
 				xrange = -xrange;
-			if (y > leds[l].y)
+			if (y > leds[l].led.y)
 				yrange = -yrange;
 			
 			var light = [];
@@ -91,7 +91,7 @@ function drawLightning() {
 					lightning[i][j].splice(k, 1);
 				}
 
-				ctx.strokeStyle = 'rgba(255, 255, 255, .5)';
+				ctx.strokeStyle = 'rgba(255, 255, 255, .8)';
 				ctx.lineWidth = 3;
 				if (random(0, 15) === 0)
 				{
@@ -127,9 +127,9 @@ function animateLightning() {
 	drawLightning();
 }
 
-function LightningLeds(pLeds)
+function LightningLeds(listLeds)
 {
-	leds = pLeds;
+	leds = listLeds;
 }
 
 function animloop() {
