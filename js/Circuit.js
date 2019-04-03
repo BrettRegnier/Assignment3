@@ -1,9 +1,9 @@
 class Circuit {
-	constructor(cW, cH, canvas) {
+	constructor(cW, cH, canvas, numLeds) {
 		this.Resize(cW, cH);
 		this.canvas = canvas;
 		this.leds = [];
-		this.BuildLeds();
+		this.BuildLeds(numLeds);
 		this.BuildWires();
 	}
 
@@ -14,6 +14,9 @@ class Circuit {
 		var rctx = this.cx - this.cpuW / 2;
 		var rcty = this.cy - this.cpuH / 2;
 
+		
+		ctx.shadowColor	= "#D7B740";
+		ctx.shadowBlur = 5;
 		ctx.fillStyle = "#101010";
 		ctx.fillRect(rctx, rcty, this.cpuW, this.cpuH);
 
@@ -30,8 +33,15 @@ class Circuit {
 		ctx.fillStyle = "#EFEAE6";
 		ctx.fillRect(rctx + innerstyle, rcty + innerstyle, this.cpuW - innerstyle * 2, this.cpuH - innerstyle * 2);
 
+		ctx.shadowBlur = 0;	
+		
 		for (var i = 0; i < this.leds.length; i++)
 		{
+			if (this.leds[i].on)
+				ctx.shadowBlur = 6;
+			else
+				ctx.shadowBlur = 0;
+				
 			ctx.fillStyle = "#D7B740";
 			ctx.fillRect(this.leds[i].cpuWire.x, this.leds[i].cpuWire.y, this.leds[i].cpuWire.w, this.leds[i].cpuWire.h);
 			ctx.fillRect(this.leds[i].ledWire.x, this.leds[i].ledWire.y, this.leds[i].ledWire.w, this.leds[i].ledWire.h);
@@ -48,6 +58,8 @@ class Circuit {
 			ctx.beginPath();
 			ctx.arc(this.leds[i].x, this.leds[i].y, this.leds[i].radius, 0, 2 * Math.PI);
 			ctx.fillStyle = this.leds[i].color;
+			ctx.shadowBlur = this.leds[i].blur;
+			ctx.shadowColor = this.leds[i].color;
 			ctx.fill();
 			ctx.closePath();
 		}
@@ -55,10 +67,13 @@ class Circuit {
 
 	On(idx) {
 		this.leds[idx].color = "#D7B740";
+		this.leds[idx].blur = 20;
+		this.leds[idx].on = true;
 	}
 
 	Off(idx) {
 		this.leds[idx].color = "#8B021E";
+		this.leds[idx].on = false;
 	}
 
 	Click(mouse) {
@@ -87,7 +102,7 @@ class Circuit {
 		this.cpuH = Math.abs(0.2 * this.cH);
 	}
 
-	BuildLeds() {
+	BuildLeds(numLeds) {
 
 		var prevX = 0;
 		var prevY = 0;
@@ -102,11 +117,14 @@ class Circuit {
 
 		var upBound = 1.2;
 		var lowBound = 0.8;
+		
+		// this splits the value inputted into 4 loops, where the last loop has the overflowed ones.
+		var lowLoop = Math.floor(numLeds / 4);
+		var highLoop = lowLoop + numLeds % 4;
 
 		// TODO calculations for making any inputted amount be divided into 4 sections
-
 		// Find right sided plotted points
-		for (var i = 0; i < 3; i++)
+		for (var i = 0; i < lowLoop; i++)
 		{
 			nextX = Math.random() * rrX;
 			while (prevX == nextX || nextX < upBound)
@@ -119,11 +137,11 @@ class Circuit {
 			var mapx = Math.max(Math.min((this.cW * nextX) / rrX, this.cW - 200), 200);
 			var mapy = Math.max(Math.min((this.cH * nextY) / rrY, this.cH - 100), 100);
 
-			this.leds.push({ x: mapx, y: mapy, radius: r, color: "#ffffff" });
+			this.leds.push({ x: mapx, y: mapy, radius: r, color: "#ffffff", blur: 0, shadow: "black" });
 		}
 
 		// find left sided plotted points
-		for (var i = 0; i < 3; i++)
+		for (var i = 0; i < lowLoop; i++)
 		{
 			nextX = Math.random() * rrX;
 			while (prevX == nextX || nextX > lowBound)
@@ -136,11 +154,11 @@ class Circuit {
 			var mapx = Math.max(Math.min((this.cW * nextX) / rrX, this.cW - 200), 200);
 			var mapy = Math.max(Math.min((this.cH * nextY) / rrY, this.cH - 100), 100);
 
-			this.leds.push({ x: mapx, y: mapy, radius: r, color: "#ffffff" });
+			this.leds.push({ x: mapx, y: mapy, radius: r, color: "#ffffff", blur: 0, shadow: "black" });
 		}
 
 		// find top sided plotted points
-		for (var i = 0; i < 3; i++)
+		for (var i = 0; i < lowLoop; i++)
 		{
 			nextX = Math.random() * rrX;
 			nextY = Math.random() * rrY;
@@ -153,11 +171,11 @@ class Circuit {
 			var mapx = Math.max(Math.min((this.cW * nextX) / rrX, this.cW - 200), 200);
 			var mapy = Math.max(Math.min((this.cH * nextY) / rrY, this.cH - 100), 100);
 
-			this.leds.push({ x: mapx, y: mapy, radius: r, color: "#ffffff" });
+			this.leds.push({ x: mapx, y: mapy, radius: r, color: "#ffffff", blur: 0, shadow: "black" });
 		}
 
-		// find left sided plotted points
-		for (var i = 0; i < 3; i++)
+		// find bottom sided plotted points
+		for (var i = 0; i < highLoop; i++)
 		{
 			nextX = Math.random() * rrX;
 			nextY = Math.random() * rrY;
@@ -170,9 +188,10 @@ class Circuit {
 			var mapx = Math.max(Math.min((this.cW * nextX) / rrX, this.cW - 200), 200);
 			var mapy = Math.max(Math.min((this.cH * nextY) / rrY, this.cH - 100), 100);
 
-			this.leds.push({ x: mapx, y: mapy, radius: r, color: "#ffffff" });
+			this.leds.push({ x: mapx, y: mapy, radius: r, color: "#ffffff", blur: 0, shadow: "black" });
 		}
 	}
+
 	BuildWires() {
 		var left = this.cx - this.cpuW / 2;
 		var right = this.cx + this.cpuW / 2;
@@ -242,7 +261,8 @@ class Circuit {
 				ledWire.w = thicc;
 				ledWire.h = Math.abs(this.leds[i].y - cpuWire.y);
 			}
-			else if (this.leds[i].x > right) {
+			else if (this.leds[i].x > right)
+			{
 				// right case
 				// draw the rect that connects directly with the cpu
 				cpuWire.x = right;
@@ -258,7 +278,7 @@ class Circuit {
 
 				ledWire.x = this.leds[i].x;
 				ledWire.y = verty;
-				ledWire.w = thicc;				
+				ledWire.w = thicc;
 				ledWire.h = Math.abs(this.leds[i].y - cpuWire.y);
 			}
 

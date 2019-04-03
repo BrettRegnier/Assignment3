@@ -1,12 +1,9 @@
 window.onload = function () {
 
-	// Potentially problem: list of 100 tweets come in, only keep 12, eventaully cycle back to the first ones.
-	// Potential fix, have array that keeps track of all previous tweets up to a max, then flush.
-	
-	var _numTweets = 12;
-	var _retweetThreshold = 10;
+	var _numTweets = 13;
+	var _tweetRequest = 50;
 
-	var _prevListTweets = [];
+	var _allPrevTweets = [];
 	var _curListTweets = [];
 
 	var _tweetHolder = [];
@@ -16,7 +13,7 @@ window.onload = function () {
 	_canvas.width = window.innerWidth;
 	_canvas.height = window.innerHeight;
 
-	var _circuit = new Circuit(_canvas.width, _canvas.height, _canvas);
+	var _circuit = new Circuit(_canvas.width, _canvas.height, _canvas, _numTweets);
 	_circuit.Draw();
 
 	var _curTweet;
@@ -130,23 +127,26 @@ window.onload = function () {
 
 				tweets = tmp;
 
-				for (var i = tweets.length - 1; i > 0; i--)
+				for (var i = 0; i < tweets.length; i++)
 				{
 					// while less than requested tweets
 					if (newTweets < _numTweets)
 					{
 						var newTweet = true;
-						if (_prevListTweets)
-							for (var j = 0; j < _prevListTweets.length; j++)
-								if (tweets[i].id == _prevListTweets[j].id)
+						if (_allPrevTweets)
+							for (var j = 0; j < _allPrevTweets.length; j++)
+								if (tweets[i].id == _allPrevTweets[j].id)
 									newTweet = false;
 
 						if (newTweet)
 						{
 							newTweets++;
 							_curListTweets.unshift(tweets[i]);
+							_allPrevTweets.unshift(tweets[i]);
 							if (_curListTweets.length > _numTweets)
 								_curListTweets.pop();
+							if (_allPrevTweets.length > _tweetRequest)
+								_allPrevTweets.pop();
 						}
 					}
 				}
@@ -197,12 +197,8 @@ window.onload = function () {
 					}
 				}
 				
-				// LightningLeds(_circuit.leds);
 				LightningLeds(lightningLeds);
-				
 				_circuit.Draw();
-				_prevListTweets = _curListTweets;
-				console.log(_curListTweets);
 			} else
 			{
 				console.log(xhr);
